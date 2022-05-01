@@ -18,6 +18,8 @@ public class GeoChart extends JComponent {
         scroll.getViewport().setOpaque(false);
         scroll.setViewportBorder(null);
         scroll.setBorder(null);
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         setLayout(new BorderLayout());
         add(scroll);
         setPreferredSize(new Dimension(250, 200));

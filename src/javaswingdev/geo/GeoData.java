@@ -31,7 +31,9 @@ public class GeoData {
             JSONObject features_data = (JSONObject) features.get(i);
             JSONObject properties = (JSONObject) features_data.get("properties");
             String countryName = (String) properties.get("ADMIN");
-            hash.put(countryName, getCoordinates((JSONObject) features_data.get("geometry")));
+            if (!countryName.equals("Antarctica")) {
+                hash.put(countryName, getCoordinates((JSONObject) features_data.get("geometry")));
+            }
         }
         return hash;
     }

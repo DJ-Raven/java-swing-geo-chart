@@ -3,8 +3,11 @@ package javaswingdev.geo;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Shape;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.Path2D;
@@ -12,6 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JComponent;
+import javax.swing.JViewport;
+import javax.swing.SwingUtilities;
 
 public class GeoChartPanel extends JComponent {
 
@@ -19,6 +24,7 @@ public class GeoChartPanel extends JComponent {
     private HashMap<String, List<List<Coordinates>>> data;
     private HashMap<String, Shape> shape;
     private MaxAndMin maxAndMin;
+    private float zoom = 6;
 
     public GeoChartPanel(JComponent component) {
         this.component = component;
@@ -33,6 +39,8 @@ public class GeoChartPanel extends JComponent {
         data.forEach((t, u) -> {
             shape.put(t, toShap(u));
         });
+        setPreferredSize(maxAndMin.getTotalSize(zoom));
+
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
@@ -57,6 +65,34 @@ public class GeoChartPanel extends JComponent {
                 }
             }
         });
+        initMouseScroll();
+    }
+
+    private void initMouseScroll() {
+        JViewport viewPort = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, this);
+        MouseAdapter mouseEvent = new MouseAdapter() {
+            Point origin;
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                origin = e.getPoint();
+            }
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if (origin != null) {
+                    int deltaX = origin.x - e.getX();
+                    int deltaY = origin.y - e.getY();
+                    Rectangle view = viewPort.getViewRect();
+                    view.x += deltaX;
+                    view.y += deltaY;
+                    GeoChartPanel.this.scrollRectToVisible(view);
+                }
+            }
+
+        };
+        addMouseListener(mouseEvent);
+        addMouseMotionListener(mouseEvent);
     }
 
     @Override
@@ -90,7 +126,7 @@ public class GeoChartPanel extends JComponent {
     }
 
     private Shape toShap(List<List<Coordinates>> data) {
-        float size = 5;
+        float size = zoom;
         double minHeight = maxAndMin.getMin_height() * -1;
         double minWidth = maxAndMin.getMin_width() * -1;
         double totalHeight = minHeight + maxAndMin.getMax_height();

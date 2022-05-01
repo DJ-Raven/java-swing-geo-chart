@@ -1,5 +1,7 @@
 package javaswingdev.geo;
 
+import java.awt.Dimension;
+
 public class MaxAndMin {
 
     public double getMin_width() {
@@ -48,6 +50,12 @@ public class MaxAndMin {
     private double min_height;
     private double max_width;
     private double max_height;
+
+    public Dimension getTotalSize(float zoom) {
+        double width = (min_width * -1 + max_width) * zoom;
+        double height = (min_height * -1 + max_height) * zoom;
+        return new Dimension((int) width, (int) height);
+    }
 
     @Override
     public String toString() {
