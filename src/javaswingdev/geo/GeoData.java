@@ -15,7 +15,16 @@ import javaswingdev.geo.json.JsonData;
 
 public class GeoData {
 
-    public GeoData() {
+    private static GeoData instance;
+
+    public static GeoData getInstance() {
+        if (instance == null) {
+            instance = new GeoData();
+        }
+        return instance;
+    }
+
+    private GeoData() {
 
     }
 
@@ -40,12 +49,10 @@ public class GeoData {
         JsonData data = get();
         for (Features f : data.getFeatures()) {
             String countryName = f.getProperties().getADMIN();
-            if (countryName.equals("Cambodia")) {
-                hash.put(countryName, getCoordinates(f.getGeometry().getCoordinates(), f.getGeometry().getType()));
-            }
+            //if (countryName.equals("Cambodia")) {
+            hash.put(countryName, getCoordinates(f.getGeometry().getCoordinates(), f.getGeometry().getType()));
+            // }
         }
-        data.getFeatures().clear();
-        data = null;
         return hash;
     }
 

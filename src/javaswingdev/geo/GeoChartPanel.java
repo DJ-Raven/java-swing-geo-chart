@@ -35,7 +35,7 @@ public class GeoChartPanel extends JComponent {
     private Shape shape_over;
 
     public void init() {
-        data = new GeoData().getCountry();
+        data = GeoData.getInstance().getCountry();
         maxAndMin = getMaxAndMin(data);
         shape = new HashMap<>();
         initShape();
