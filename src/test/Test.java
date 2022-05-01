@@ -1,7 +1,6 @@
 package test;
 
 import java.awt.Color;
-import java.awt.Dimension;
 
 /**
  *
@@ -14,10 +13,8 @@ public class Test extends javax.swing.JFrame {
      */
     public Test() {
         initComponents();
-        getContentPane().setBackground(Color.WHITE);
-        geoChart1.init();
-        geoChart1.setPreferredSize(new Dimension(20000, 20000));
-        jScrollPane1.getViewport().setOpaque(false);
+        getContentPane().setBackground(new Color(92, 92, 92));
+        geoChart.init();
     }
 
     /**
@@ -29,12 +26,11 @@ public class Test extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane1 = new javax.swing.JScrollPane();
-        geoChart1 = new javaswingdev.geo.GeoChart();
+        geoChart = new javaswingdev.geo.GeoChart();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jScrollPane1.setViewportView(geoChart1);
+        geoChart.setBackground(new java.awt.Color(255, 255, 255));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -42,14 +38,14 @@ public class Test extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 969, Short.MAX_VALUE)
+                .addComponent(geoChart, javax.swing.GroupLayout.DEFAULT_SIZE, 969, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 579, Short.MAX_VALUE)
+                .addComponent(geoChart, javax.swing.GroupLayout.DEFAULT_SIZE, 579, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -93,7 +89,6 @@ public class Test extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javaswingdev.geo.GeoChart geoChart1;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javaswingdev.geo.GeoChart geoChart;
     // End of variables declaration//GEN-END:variables
 }
