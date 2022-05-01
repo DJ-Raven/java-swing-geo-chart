@@ -13,8 +13,8 @@ import org.json.simple.parser.ParseException;
 
 public class GeoData {
 
-    private final JSONParser parser = new JSONParser();
-    JSONObject data;
+    private JSONParser parser = new JSONParser();
+    private JSONObject data;
 
     public GeoData() {
         try {

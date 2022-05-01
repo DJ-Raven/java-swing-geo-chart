@@ -51,7 +51,7 @@ public class MaxAndMin {
     private double max_width;
     private double max_height;
 
-    public Dimension getTotalSize(float zoom) {
+    public Dimension getTotalSize(double zoom) {
         double width = (min_width * -1 + max_width) * zoom;
         double height = (min_height * -1 + max_height) * zoom;
         return new Dimension((int) width, (int) height);

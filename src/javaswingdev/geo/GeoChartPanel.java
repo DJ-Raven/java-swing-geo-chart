@@ -1,6 +1,7 @@
 package javaswingdev.geo;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -10,7 +11,9 @@ import java.awt.Shape;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +27,7 @@ public class GeoChartPanel extends JComponent {
     private HashMap<String, List<List<Coordinates>>> data;
     private HashMap<String, Shape> shape;
     private MaxAndMin maxAndMin;
-    private float zoom = 6;
+    private double zoom = 6;
 
     public GeoChartPanel(JComponent component) {
         this.component = component;
@@ -34,19 +37,17 @@ public class GeoChartPanel extends JComponent {
     public void init() {
         data = new GeoData().getCountry();
         maxAndMin = getMaxAndMin(data);
-        System.out.println(maxAndMin.toString());
         shape = new HashMap<>();
-        data.forEach((t, u) -> {
-            shape.put(t, toShap(u));
-        });
-        setPreferredSize(maxAndMin.getTotalSize(zoom));
-
+        initShape();
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
                 boolean over = false;
+                Dimension size = maxAndMin.getTotalSize(zoom);
+                double centerX = (getWidth() - size.getWidth()) / 2;
+                double centerY = (getHeight() - size.getHeight()) / 2;
                 for (Map.Entry<String, Shape> s : shape.entrySet()) {
-                    if (s.getValue().contains(e.getPoint())) {
+                    if (s.getValue().contains(e.getPoint().getX() - centerX, e.getPoint().getY() - centerY)) {
                         over = true;
                         if (s.getValue() != shape_over) {
                             shape_over = s.getValue();
@@ -54,7 +55,6 @@ public class GeoChartPanel extends JComponent {
                             System.out.println(s.getKey());
                             break;
                         }
-
                     }
                 }
                 if (!over) {
@@ -66,6 +66,15 @@ public class GeoChartPanel extends JComponent {
             }
         });
         initMouseScroll();
+    }
+
+    private void initShape() {
+        shape.clear();
+        data.forEach((t, u) -> {
+            shape.put(t, toShap(u));
+        });
+        setPreferredSize(maxAndMin.getTotalSize(zoom));
+        revalidate();
     }
 
     private void initMouseScroll() {
@@ -90,24 +99,59 @@ public class GeoChartPanel extends JComponent {
                 }
             }
 
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                double previousZoom = zoom;
+                double zoomFactor = -0.1 * e.getPreciseWheelRotation() * zoom;
+                zoom = Math.abs(zoom + zoomFactor);
+                if (e.getWheelRotation() < 0) {
+                    zoom += 0.5f;
+                } else {
+                    zoom -= 0.5f;
+                }
+                initShape();
+                repaint();
+                followMouseOrCenter(e.getPoint(), previousZoom);
+            }
         };
         addMouseListener(mouseEvent);
         addMouseMotionListener(mouseEvent);
+        addMouseWheelListener(mouseEvent);
+    }
+
+    public void followMouseOrCenter(Point2D point, double previousZoom) {
+        Rectangle size = getBounds();
+        Rectangle visibleRect = getVisibleRect();
+        double scrollX = size.getCenterX();
+        double scrollY = size.getCenterY();
+        if (point != null) {
+            scrollX = point.getX() / previousZoom * zoom - (point.getX() - visibleRect.getX());
+            scrollY = point.getY() / previousZoom * zoom - (point.getY() - visibleRect.getY());
+        }
+        visibleRect.setRect(scrollX, scrollY, visibleRect.getWidth(), visibleRect.getHeight());
+        scrollRectToVisible(visibleRect);
     }
 
     @Override
     protected void paintComponent(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g.create();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
+        Rectangle clip = g.getClipBounds();
         if (component.isOpaque()) {
-            g.setColor(component.getBackground());
-            g.fillRect(0, 0, getWidth(), getHeight());
+            g2.setColor(component.getBackground());
+            g2.fill(clip);
         }
         if (shape != null) {
-            Graphics2D g2 = (Graphics2D) g.create();
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
             g2.setColor(new Color(194, 194, 194));
+            Dimension size = maxAndMin.getTotalSize(zoom);
+            double centerX = (getWidth() - size.getWidth()) / 2;
+            double centerY = (getHeight() - size.getHeight()) / 2;
+            g2.translate(centerX, centerY);
             shape.forEach((t, u) -> {
-                drawCountry(g2, u);
+                if (u.intersects(clip)) {
+                    drawCountry(g2, u);
+                }
             });
             g2.dispose();
         }
@@ -116,7 +160,6 @@ public class GeoChartPanel extends JComponent {
 
     private void drawCountry(Graphics2D g2, Shape shap) {
         g2.setColor(new Color(178, 178, 178));
-        //  g2.fill(shap);
         if (shap == shape_over) {
             g2.setColor(new Color(61, 149, 217));
             g2.fill(shap);
@@ -126,7 +169,7 @@ public class GeoChartPanel extends JComponent {
     }
 
     private Shape toShap(List<List<Coordinates>> data) {
-        float size = zoom;
+        double size = zoom;
         double minHeight = maxAndMin.getMin_height() * -1;
         double minWidth = maxAndMin.getMin_width() * -1;
         double totalHeight = minHeight + maxAndMin.getMax_height();
