@@ -1,7 +1,5 @@
 package javaswingdev.geo.json;
 
-import java.util.List;
-
 public class JsonData {
 
     public String getType() {
@@ -12,14 +10,14 @@ public class JsonData {
         this.type = type;
     }
 
-    public List<Features> getFeatures() {
+    public Features[] getFeatures() {
         return features;
     }
 
-    public void setFeatures(List<Features> features) {
+    public void setFeatures(Features[] features) {
         this.features = features;
     }
 
     private String type;
-    private List<Features> features;
+    private Features[] features;
 }
