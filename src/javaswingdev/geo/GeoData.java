@@ -1,58 +1,77 @@
 package javaswingdev.geo;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
+import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import javaswingdev.geo.json.Features;
+import javaswingdev.geo.json.JsonData;
 
 public class GeoData {
 
-    private JSONParser parser = new JSONParser();
-    private JSONObject data;
-
     public GeoData() {
+
+    }
+
+    public JsonData get() {
         try {
-            data = (JSONObject) parser.parse(new FileReader("countries.geojson"));
-        } catch (IOException | ParseException e) {
+            GsonBuilder builder = new GsonBuilder();
+            Gson gson = builder.create();
+            FileReader file = new FileReader("countries.geojson");
+            BufferedReader bufferedReader = new BufferedReader(file);
+            JsonData data = gson.fromJson(bufferedReader, JsonData.class);
+            bufferedReader.close();
+            file.close();
+            return data;
+        } catch (JsonIOException | JsonSyntaxException | IOException e) {
             System.err.println(e);
         }
+        return null;
     }
 
     public HashMap<String, List<List<Coordinates>>> getCountry() {
         HashMap<String, List<List<Coordinates>>> hash = new HashMap<>();
-        JSONArray features = (JSONArray) data.get("features");
-        for (int i = 0; i < features.size(); i++) {
-            JSONObject features_data = (JSONObject) features.get(i);
-            JSONObject properties = (JSONObject) features_data.get("properties");
-            String countryName = (String) properties.get("ADMIN");
-            if (!countryName.equals("Antarctica")) {
-                hash.put(countryName, getCoordinates((JSONObject) features_data.get("geometry")));
+        JsonData data = get();
+        for (Features f : data.getFeatures()) {
+            String countryName = f.getProperties().getADMIN();
+            if (countryName.equals("Cambodia")) {
+                hash.put(countryName, getCoordinates(f.getGeometry().getCoordinates(), f.getGeometry().getType()));
             }
         }
+        data.getFeatures().clear();
+        data = null;
         return hash;
     }
 
-    private List<List<Coordinates>> getCoordinates(JSONObject data) {
+    private List<List<Coordinates>> getCoordinates(List<List<List<Object>>> data, String type) {
         List<List<Coordinates>> list = new ArrayList<>();
-        JSONArray coordinates = (JSONArray) data.get("coordinates");
-        for (int i = 0; i < coordinates.size(); i++) {
-            List<Coordinates> l = new LinkedList<>();
-            JSONArray arr = (JSONArray) coordinates.get(i);
-            for (int j = 0; j < arr.size(); j++) {
-                JSONArray obj = (JSONArray) arr.get(j);
-                String texts[] = obj.toString().replace("[", "").replace("]", "").split(",");
-                int index = 0;
-                for (int k = 0; k < texts.length; k += 2) {
-                    l.add(new Coordinates(Double.valueOf(texts[index++]), Double.valueOf(texts[index++])));
+        if (type.equals("Polygon")) {
+            for (List<List<Object>> d : data) {
+                List<Coordinates> coordinates = new ArrayList<>();
+                for (List<Object> o : d) {
+                    coordinates.add(new Coordinates(Double.valueOf(o.get(0).toString()), Double.valueOf(o.get(1).toString())));
                 }
+                list.add(coordinates);
             }
-            list.add(l);
+        } else {
+            for (List<List<Object>> d : data) {
+                List<Coordinates> coordinates = new ArrayList<>();
+                for (List<Object> o : d) {
+                    for (Object i : o) {
+                        String values[] = i.toString().replace("[", "").replace("]", "").split(",");
+                        if (values.length == 2) {
+                            coordinates.add(new Coordinates(Double.valueOf(values[0]), Double.valueOf(values[1])));
+                        }
+                    }
+                }
+                list.add(coordinates);
+            }
         }
         return list;
     }
