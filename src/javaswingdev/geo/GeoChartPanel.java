@@ -197,13 +197,22 @@ public class GeoChartPanel extends JComponent {
         double min_height = 0;
         double max_width = 0;
         double max_height = 0;
+        boolean init = true;
         for (List<List<Coordinates>> list : data.values()) {
             for (List<Coordinates> d : list) {
                 for (Coordinates c : d) {
-                    min_width = Math.min(min_width, c.getX());
-                    min_height = Math.min(min_height, c.getY());
-                    max_width = Math.max(max_width, c.getX());
-                    max_height = Math.max(max_height, c.getY());
+                    if (init) {
+                        min_width = c.getX();
+                        min_height = c.getY();
+                        max_width = c.getX();
+                        max_height = c.getY();
+                        init = false;
+                    } else {
+                        min_width = Math.min(min_width, c.getX());
+                        min_height = Math.min(min_height, c.getY());
+                        max_width = Math.max(max_width, c.getX());
+                        max_height = Math.max(max_height, c.getY());
+                    }
                 }
             }
         }

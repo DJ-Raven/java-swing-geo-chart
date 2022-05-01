@@ -50,9 +50,9 @@ public class GeoData {
         for (int i = 0; i < data.getFeatures().length; i++) {
             Features f = data.getFeatures()[i];
             String countryName = f.getProperties().getADMIN();
-            //if (countryName.equals("Cambodia")) {
-            hash.put(countryName, getCoordinates(f.getGeometry().getCoordinates(), f.getGeometry().getType()));
-            // }
+            if (checkCountry(countryName, f.getProperties().getISO_A3())) {
+                hash.put(countryName, getCoordinates(f.getGeometry().getCoordinates(), f.getGeometry().getType()));
+            }
         }
         return hash;
     }
@@ -80,5 +80,9 @@ public class GeoData {
             }
         }
         return list;
+    }
+
+    private boolean checkCountry(String countryName, String type) {
+        return !countryName.equals("Antarctica");
     }
 }
