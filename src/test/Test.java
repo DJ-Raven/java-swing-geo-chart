@@ -1,6 +1,7 @@
 package test;
 
 import java.awt.Color;
+import javaswingdev.geo.GeoData;
 
 /**
  *
@@ -14,7 +15,7 @@ public class Test extends javax.swing.JFrame {
     public Test() {
         initComponents();
         getContentPane().setBackground(new Color(255, 255, 255));
-        geoChart.load();
+        geoChart.load(GeoData.Resolution.LOW);
     }
 
     /**
@@ -29,6 +30,7 @@ public class Test extends javax.swing.JFrame {
         geoChart = new javaswingdev.geo.GeoChart();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Geo Chart Java Swing 2D");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

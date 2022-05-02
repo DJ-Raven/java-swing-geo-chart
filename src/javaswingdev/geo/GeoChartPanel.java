@@ -21,6 +21,10 @@ import javax.swing.SwingUtilities;
 
 public class GeoChartPanel extends JComponent {
 
+    public boolean isHasData() {
+        return shape != null;
+    }
+
     public double getZoom() {
         return zoom;
     }

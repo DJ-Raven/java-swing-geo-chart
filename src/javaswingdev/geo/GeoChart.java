@@ -3,11 +3,16 @@ package javaswingdev.geo;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.RadialGradientPaint;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.geom.Area;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JComponent;
@@ -56,6 +61,34 @@ public class GeoChart extends JComponent {
             g2.dispose();
         }
         super.paintComponent(g);
+    }
+
+    @Override
+    public void paint(Graphics g) {
+        super.paint(g);
+        if (geoChartPanel.isHasData()) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            drawAxis(g2);
+            g2.dispose();
+        }
+    }
+
+    private void drawAxis(Graphics2D g2) {
+        Insets inset = getInsets();
+        double width = getWidth();
+        double height = getHeight();
+        double axisWidth = width * 0.25f;
+        double axisHeight = height * 0.03f;
+        double x = inset.left + 5;
+        double y = height - inset.bottom - 5 - axisHeight;
+        Rectangle2D rec = new Rectangle2D.Double(x, y, axisWidth, axisHeight);
+        g2.setColor(new Color(0, 0, 0, 70));
+        g2.translate(2, 2);
+        g2.fill(new Area(rec));
+        g2.translate(-2, -2);
+        g2.setPaint(new GradientPaint((float) rec.getX(), 0, new Color(210, 255, 235), (float) (rec.getX() + rec.getWidth()), 0, new Color(27, 158, 101)));
+        g2.fill(rec);
     }
 
     private RadialGradientPaint getGradient() {
