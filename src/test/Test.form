@@ -42,6 +42,11 @@
   </Layout>
   <SubComponents>
     <Component class="javaswingdev.geo.GeoChart" name="geoChart">
+      <Properties>
+        <Property name="gradientColor" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="ff" green="d8" red="99" type="rgb"/>
+        </Property>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

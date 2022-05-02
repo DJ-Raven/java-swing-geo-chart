@@ -5,14 +5,15 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-public class GeoChart extends JComponent {
+public class GeoChart extends JPanel {
 
     private final GeoChartPanel geoChartPanel;
     private final JScrollPane scroll;
-    private List<GeoData.Regions> geoRegions = new ArrayList<>();
+    private final List<GeoData.Regions> geoRegions = new ArrayList<>();
+    private Color gradientColor;
 
     public GeoChart() {
         scroll = new JScrollPane();
@@ -47,5 +48,14 @@ public class GeoChart extends JComponent {
 
     public GeoChartPanel getGeoChart() {
         return geoChartPanel;
+    }
+
+    public Color getGradientColor() {
+        return gradientColor;
+    }
+
+    public void setGradientColor(Color gradientColor) {
+        this.gradientColor = gradientColor;
+        repaint();
     }
 }

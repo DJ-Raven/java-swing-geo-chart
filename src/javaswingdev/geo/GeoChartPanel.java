@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.RadialGradientPaint;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Shape;
@@ -57,7 +58,7 @@ public class GeoChartPanel extends JComponent {
         }
     }
 
-    private final JComponent component;
+    private final GeoChart component;
     private HashMap<String, List<List<Coordinates>>> data;
     private HashMap<String, Shape> shape;
     private MaxAndMin maxAndMin;
@@ -65,7 +66,7 @@ public class GeoChartPanel extends JComponent {
     private double min_zoom = 1.5;
     private double max_zoom = 300;
 
-    public GeoChartPanel(JComponent component) {
+    public GeoChartPanel(GeoChart component) {
         this.component = component;
     }
     private Shape shape_over;
@@ -184,7 +185,11 @@ public class GeoChartPanel extends JComponent {
         g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
         Rectangle clip = g.getClipBounds();
         if (component.isOpaque()) {
-            g2.setColor(component.getBackground());
+            if (component.getGradientColor() != null) {
+                g2.setPaint(getGradient(clip));
+            } else {
+                g2.setColor(component.getBackground());
+            }
             g2.fill(clip);
         }
         if (shape != null) {
@@ -262,5 +267,14 @@ public class GeoChartPanel extends JComponent {
             }
         }
         return new MaxAndMin(min_width, min_height, max_width, max_height);
+    }
+
+    private RadialGradientPaint getGradient(Rectangle rec) {
+        Dimension size = rec.getSize();
+        Point2D center = new Point2D.Double(rec.x + size.getWidth() / 2, rec.y + size.getHeight() / 2);
+        float radius = (float) Math.max(size.getWidth(), size.getHeight()) / 2;
+        float[] dist = {0.0f, 1.0f};
+        Color[] colors = {component.getBackground(), component.getGradientColor()};
+        return new RadialGradientPaint(center, radius, dist, colors);
     }
 }

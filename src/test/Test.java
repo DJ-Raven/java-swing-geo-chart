@@ -1,7 +1,6 @@
 package test;
 
 import java.awt.Color;
-import javaswingdev.geo.GeoData;
 
 /**
  *
@@ -15,7 +14,7 @@ public class Test extends javax.swing.JFrame {
     public Test() {
         initComponents();
         getContentPane().setBackground(new Color(92, 92, 92));
-        geoChart.setRegions(GeoData.Regions.ASIA);
+  
         geoChart.load();
     }
 
@@ -31,6 +30,8 @@ public class Test extends javax.swing.JFrame {
         geoChart = new javaswingdev.geo.GeoChart();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        geoChart.setGradientColor(new java.awt.Color(153, 216, 255));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
