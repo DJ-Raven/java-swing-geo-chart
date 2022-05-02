@@ -68,8 +68,8 @@ public class GeoChartPanel extends JComponent {
     }
     private Shape shape_over;
 
-    public void init(List<GeoData.Regions> geoRegions) {
-        data = GeoData.getInstance().getCountry(geoRegions);
+    public void init(List<GeoData.Regions> geoRegions, GeoData.Resolution resolution) {
+        data = GeoData.getInstance().getCountry(geoRegions, resolution);
         maxAndMin = getMaxAndMin(data);
         shape = new HashMap<>();
         initShape();

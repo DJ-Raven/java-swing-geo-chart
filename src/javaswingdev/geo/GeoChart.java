@@ -79,8 +79,12 @@ public class GeoChart extends JComponent {
         geoRegions.clear();
     }
 
+    public void load(GeoData.Resolution resolution) {
+        geoChartPanel.init(geoRegions, resolution);
+    }
+
     public void load() {
-        geoChartPanel.init(geoRegions);
+        geoChartPanel.init(geoRegions, GeoData.Resolution.MEDIUM);
     }
 
     public GeoChartPanel getGeoChart() {

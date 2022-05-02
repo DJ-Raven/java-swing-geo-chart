@@ -28,11 +28,12 @@ public class GeoData {
     private GeoData() {
     }
 
-    public JsonData get() {
+    public JsonData get(Resolution resolution) {
         try {
             GsonBuilder builder = new GsonBuilder();
             Gson gson = builder.create();
-            InputStream in = getClass().getResourceAsStream("/javaswingdev/geo/json/countries.geo.medium.json");
+            String fileName = resolution == Resolution.LOW ? "countries.geo.low.json" : "countries.geo.medium.json";
+            InputStream in = getClass().getResourceAsStream("/javaswingdev/geo/json/" + fileName);
             InputStreamReader reader = new InputStreamReader(in);
             BufferedReader bufferedReader = new BufferedReader(reader);
             JsonData data = gson.fromJson(bufferedReader, JsonData.class);
@@ -46,9 +47,9 @@ public class GeoData {
         return null;
     }
 
-    public HashMap<String, List<List<Coordinates>>> getCountry(List<GeoData.Regions> geoRegions) {
+    public HashMap<String, List<List<Coordinates>>> getCountry(List<GeoData.Regions> geoRegions, Resolution resolution) {
         HashMap<String, List<List<Coordinates>>> hash = new HashMap<>();
-        JsonData data = get();
+        JsonData data = get(resolution);
         for (int i = 0; i < data.getFeatures().length; i++) {
             Features f = data.getFeatures()[i];
             if (geoRegions.isEmpty() || checkCountry(geoRegions, f.getProperties().getContinent())) {
@@ -106,5 +107,9 @@ public class GeoData {
         public String getValues() {
             return value;
         }
+    }
+
+    public static enum Resolution {
+        LOW, MEDIUM
     }
 }
