@@ -2,30 +2,30 @@ package javaswingdev.geo.json;
 
 public class Properties {
 
-    public String getADMIN() {
-        return ADMIN;
+    public String getName() {
+        return name;
     }
 
-    public void setADMIN(String ADMIN) {
-        this.ADMIN = ADMIN;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getISO_A3() {
-        return ISO_A3;
+    public String getContinent() {
+        return continent;
     }
 
-    public void setISO_A3(String ISO_A3) {
-        this.ISO_A3 = ISO_A3;
+    public void setContinent(String continent) {
+        this.continent = continent;
     }
 
-    public Properties(String ADMIN, String ISO_A3) {
-        this.ADMIN = ADMIN;
-        this.ISO_A3 = ISO_A3;
+    public Properties(String name, String continent) {
+        this.name = name;
+        this.continent = continent;
     }
 
     public Properties() {
     }
 
-    private String ADMIN;
-    private String ISO_A3;
+    private String name;
+    private String continent;
 }
