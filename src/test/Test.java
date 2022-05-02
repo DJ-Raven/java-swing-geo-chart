@@ -13,8 +13,7 @@ public class Test extends javax.swing.JFrame {
      */
     public Test() {
         initComponents();
-        getContentPane().setBackground(new Color(92, 92, 92));
-  
+        getContentPane().setBackground(new Color(255, 255, 255));
         geoChart.load();
     }
 
@@ -35,17 +34,11 @@ public class Test extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(geoChart, javax.swing.GroupLayout.DEFAULT_SIZE, 969, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(geoChart, javax.swing.GroupLayout.DEFAULT_SIZE, 981, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(geoChart, javax.swing.GroupLayout.DEFAULT_SIZE, 579, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(geoChart, javax.swing.GroupLayout.DEFAULT_SIZE, 591, Short.MAX_VALUE)
         );
 
         pack();
