@@ -5,8 +5,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,11 +33,13 @@ public class GeoData {
         try {
             GsonBuilder builder = new GsonBuilder();
             Gson gson = builder.create();
-            FileReader file = new FileReader("countries.geojson");
-            BufferedReader bufferedReader = new BufferedReader(file);
+            InputStream in = getClass().getResourceAsStream("/javaswingdev/geo/countries.geo.json");
+            InputStreamReader reader = new InputStreamReader(in);
+            BufferedReader bufferedReader = new BufferedReader(reader);
             JsonData data = gson.fromJson(bufferedReader, JsonData.class);
+            reader.close();
             bufferedReader.close();
-            file.close();
+            in.close();
             return data;
         } catch (JsonIOException | JsonSyntaxException | IOException e) {
             System.err.println(e);
@@ -49,8 +52,8 @@ public class GeoData {
         JsonData data = get();
         for (int i = 0; i < data.getFeatures().length; i++) {
             Features f = data.getFeatures()[i];
-            String countryName = f.getProperties().getADMIN();
-            if (checkCountry(countryName, f.getProperties().getISO_A3())) {
+            String countryName = f.getProperties().getName();
+            if (checkCountry(countryName)) {
                 hash.put(countryName, getCoordinates(f.getGeometry().getCoordinates(), f.getGeometry().getType()));
             }
         }
@@ -82,7 +85,7 @@ public class GeoData {
         return list;
     }
 
-    private boolean checkCountry(String countryName, String type) {
-        return !countryName.equals("Antarctica");
+    private boolean checkCountry(String countryName) {
+        return !countryName.equals("");
     }
 }
