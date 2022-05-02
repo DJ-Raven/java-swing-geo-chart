@@ -47,14 +47,13 @@ public class GeoData {
         return null;
     }
 
-    public HashMap<String, List<List<Coordinates>>> getCountry() {
+    public HashMap<String, List<List<Coordinates>>> getCountry(List<GeoData.Regions> geoRegions) {
         HashMap<String, List<List<Coordinates>>> hash = new HashMap<>();
         JsonData data = get();
         for (int i = 0; i < data.getFeatures().length; i++) {
             Features f = data.getFeatures()[i];
-            String countryName = f.getProperties().getName();
-            if (checkCountry(countryName)) {
-                hash.put(countryName, getCoordinates(f.getGeometry().getCoordinates(), f.getGeometry().getType()));
+            if (geoRegions.isEmpty() || checkCountry(geoRegions, f.getProperties().getContinent())) {
+                hash.put(f.getProperties().getName(), getCoordinates(f.getGeometry().getCoordinates(), f.getGeometry().getType()));
             }
         }
         return hash;
@@ -85,7 +84,28 @@ public class GeoData {
         return list;
     }
 
-    private boolean checkCountry(String countryName) {
-        return !countryName.equals("");
+    private boolean checkCountry(List<GeoData.Regions> geoRegions, String regions) {
+        boolean show = false;
+        for (GeoData.Regions r : geoRegions) {
+            if (r.getValues().equals(regions)) {
+                show = true;
+                break;
+            }
+        }
+        return show;
+    }
+
+    public static enum Regions {
+        NORTH_AMERICA("North America"), SOUTH_AMERICA("South America"), ASIA("Asia"), AFRICA("Africa"), EUROPE("Europe"), OCEANIA("Oceania");
+
+        private Regions(String value) {
+            this.value = value;
+        }
+
+        private final String value;
+
+        public String getValues() {
+            return value;
+        }
     }
 }

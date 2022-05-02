@@ -23,19 +23,55 @@ import javax.swing.SwingUtilities;
 
 public class GeoChartPanel extends JComponent {
 
+    public double getZoom() {
+        return zoom;
+    }
+
+    public void setZoom(double zoom) {
+        this.zoom = zoom;
+    }
+
+    public double getMin_zoom() {
+        return min_zoom;
+    }
+
+    public void setMin_zoom(double min_zoom) {
+        this.min_zoom = min_zoom;
+        if (zoom < min_zoom) {
+            double previousZoom = zoom;
+            zoom = min_zoom;
+            zoom(previousZoom, new Point(component.getWidth() / 2, component.getHeight() / 2));
+        }
+    }
+
+    public double getMax_zoom() {
+        return max_zoom;
+    }
+
+    public void setMax_zoom(double max_zoom) {
+        this.max_zoom = max_zoom;
+        if (zoom > max_zoom) {
+            double previousZoom = zoom;
+            zoom = max_zoom;
+            zoom(previousZoom, new Point(component.getWidth() / 2, component.getHeight() / 2));
+        }
+    }
+
     private final JComponent component;
     private HashMap<String, List<List<Coordinates>>> data;
     private HashMap<String, Shape> shape;
     private MaxAndMin maxAndMin;
-    private double zoom = 6;
+    private double zoom = 2.5;
+    private double min_zoom = 1.5;
+    private double max_zoom = 300;
 
     public GeoChartPanel(JComponent component) {
         this.component = component;
     }
     private Shape shape_over;
 
-    public void init() {
-        data = GeoData.getInstance().getCountry();
+    public void init(List<GeoData.Regions> geoRegions) {
+        data = GeoData.getInstance().getCountry(geoRegions);
         maxAndMin = getMaxAndMin(data);
         shape = new HashMap<>();
         initShape();
@@ -109,9 +145,12 @@ public class GeoChartPanel extends JComponent {
                 } else {
                     zoom -= 0.5f;
                 }
-                initShape();
-                repaint();
-                followMouseOrCenter(e.getPoint(), previousZoom);
+                if (zoom < min_zoom) {
+                    zoom = min_zoom;
+                } else if (zoom > max_zoom) {
+                    zoom = max_zoom;
+                }
+                zoom(previousZoom, e.getPoint());
             }
         };
         addMouseListener(mouseEvent);
@@ -119,7 +158,13 @@ public class GeoChartPanel extends JComponent {
         addMouseWheelListener(mouseEvent);
     }
 
-    public void followMouseOrCenter(Point2D point, double previousZoom) {
+    private void zoom(double previousZoom, Point point) {
+        initShape();
+        repaint();
+        followMouseOrCenter(point, previousZoom);
+    }
+
+    private void followMouseOrCenter(Point2D point, double previousZoom) {
         Rectangle size = getBounds();
         Rectangle visibleRect = getVisibleRect();
         double scrollX = size.getCenterX();
