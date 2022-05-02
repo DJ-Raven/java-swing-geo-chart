@@ -26,7 +26,6 @@ public class GeoData {
     }
 
     private GeoData() {
-
     }
 
     public JsonData get() {
@@ -37,8 +36,8 @@ public class GeoData {
             InputStreamReader reader = new InputStreamReader(in);
             BufferedReader bufferedReader = new BufferedReader(reader);
             JsonData data = gson.fromJson(bufferedReader, JsonData.class);
-            reader.close();
             bufferedReader.close();
+            reader.close();
             in.close();
             return data;
         } catch (JsonIOException | JsonSyntaxException | IOException e) {

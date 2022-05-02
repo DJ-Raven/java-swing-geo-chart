@@ -9,7 +9,6 @@ import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
@@ -74,7 +73,28 @@ public class GeoChartPanel extends JComponent {
         maxAndMin = getMaxAndMin(data);
         shape = new HashMap<>();
         initShape();
-        addMouseMotionListener(new MouseMotionAdapter() {
+        repaint();
+    }
+
+    private void initShape() {
+        shape.clear();
+        data.forEach((t, u) -> {
+            shape.put(t, toShap(u));
+        });
+        setPreferredSize(maxAndMin.getTotalSize(zoom));
+        revalidate();
+    }
+
+    public void initMouse() {
+        JViewport viewPort = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, this);
+        MouseAdapter mouseEvent = new MouseAdapter() {
+            Point origin;
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                origin = e.getPoint();
+            }
+
             @Override
             public void mouseMoved(MouseEvent e) {
                 boolean over = false;
@@ -98,28 +118,6 @@ public class GeoChartPanel extends JComponent {
                         repaint();
                     }
                 }
-            }
-        });
-        initMouseScroll();
-    }
-
-    private void initShape() {
-        shape.clear();
-        data.forEach((t, u) -> {
-            shape.put(t, toShap(u));
-        });
-        setPreferredSize(maxAndMin.getTotalSize(zoom));
-        revalidate();
-    }
-
-    private void initMouseScroll() {
-        JViewport viewPort = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, this);
-        MouseAdapter mouseEvent = new MouseAdapter() {
-            Point origin;
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-                origin = e.getPoint();
             }
 
             @Override

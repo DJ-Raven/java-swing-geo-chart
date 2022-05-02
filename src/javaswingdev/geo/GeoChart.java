@@ -36,6 +36,12 @@ public class GeoChart extends JComponent {
         setPreferredSize(new Dimension(250, 200));
         setOpaque(true);
         setBackground(new Color(178, 225, 255));
+        init();
+    }
+
+    private void init() {
+        load();
+        geoChartPanel.initMouse();
     }
 
     @Override
@@ -108,5 +114,4 @@ public class GeoChart extends JComponent {
         this.mapSelectedColor = mapSelectedColor;
         repaint();
     }
-
 }
