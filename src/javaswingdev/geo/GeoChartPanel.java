@@ -88,7 +88,7 @@ public class GeoChartPanel extends JComponent {
     public void initMouse() {
         JViewport viewPort = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, this);
         MouseAdapter mouseEvent = new MouseAdapter() {
-            Point origin;
+            private Point origin;
 
             @Override
             public void mousePressed(MouseEvent e) {
@@ -97,57 +97,63 @@ public class GeoChartPanel extends JComponent {
 
             @Override
             public void mouseMoved(MouseEvent e) {
-                boolean over = false;
-                Dimension size = maxAndMin.getTotalSize(zoom);
-                double centerX = (getWidth() - size.getWidth()) / 2;
-                double centerY = (getHeight() - size.getHeight()) / 2;
-                for (Map.Entry<String, Shape> s : shape.entrySet()) {
-                    if (s.getValue().contains(e.getPoint().getX() - centerX, e.getPoint().getY() - centerY)) {
-                        over = true;
-                        if (s.getValue() != shape_over) {
-                            shape_over = s.getValue();
-                            repaint();
-                            System.out.println(s.getKey());
-                            break;
+                if (shape != null) {
+                    boolean over = false;
+                    Dimension size = maxAndMin.getTotalSize(zoom);
+                    double centerX = (getWidth() - size.getWidth()) / 2;
+                    double centerY = (getHeight() - size.getHeight()) / 2;
+                    for (Map.Entry<String, Shape> s : shape.entrySet()) {
+                        if (s.getValue().contains(e.getPoint().getX() - centerX, e.getPoint().getY() - centerY)) {
+                            over = true;
+                            if (s.getValue() != shape_over) {
+                                shape_over = s.getValue();
+                                repaint();
+                                System.out.println(s.getKey());
+                                break;
+                            }
                         }
                     }
-                }
-                if (!over) {
-                    if (shape_over != null) {
-                        shape_over = null;
-                        repaint();
+                    if (!over) {
+                        if (shape_over != null) {
+                            shape_over = null;
+                            repaint();
+                        }
                     }
                 }
             }
 
             @Override
             public void mouseDragged(MouseEvent e) {
-                if (origin != null) {
-                    int deltaX = origin.x - e.getX();
-                    int deltaY = origin.y - e.getY();
-                    Rectangle view = viewPort.getViewRect();
-                    view.x += deltaX;
-                    view.y += deltaY;
-                    GeoChartPanel.this.scrollRectToVisible(view);
+                if (shape != null) {
+                    if (origin != null) {
+                        int deltaX = origin.x - e.getX();
+                        int deltaY = origin.y - e.getY();
+                        Rectangle view = viewPort.getViewRect();
+                        view.x += deltaX;
+                        view.y += deltaY;
+                        GeoChartPanel.this.scrollRectToVisible(view);
+                    }
                 }
             }
 
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
-                double previousZoom = zoom;
-                double zoomFactor = -0.1 * e.getPreciseWheelRotation() * zoom;
-                zoom = Math.abs(zoom + zoomFactor);
-                if (e.getWheelRotation() < 0) {
-                    zoom += 0.5f;
-                } else {
-                    zoom -= 0.5f;
+                if (shape != null) {
+                    double previousZoom = zoom;
+                    double zoomFactor = -0.1 * e.getPreciseWheelRotation() * zoom;
+                    zoom = Math.abs(zoom + zoomFactor);
+                    if (e.getWheelRotation() < 0) {
+                        zoom += 0.5f;
+                    } else {
+                        zoom -= 0.5f;
+                    }
+                    if (zoom < min_zoom) {
+                        zoom = min_zoom;
+                    } else if (zoom > max_zoom) {
+                        zoom = max_zoom;
+                    }
+                    zoom(previousZoom, e.getPoint());
                 }
-                if (zoom < min_zoom) {
-                    zoom = min_zoom;
-                } else if (zoom > max_zoom) {
-                    zoom = max_zoom;
-                }
-                zoom(previousZoom, e.getPoint());
             }
         };
         addMouseListener(mouseEvent);
@@ -176,10 +182,10 @@ public class GeoChartPanel extends JComponent {
 
     @Override
     protected void paintComponent(Graphics g) {
-        Graphics2D g2 = (Graphics2D) g.create();
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
         if (shape != null) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
             Dimension size = maxAndMin.getTotalSize(zoom);
             double centerX = (getWidth() - size.getWidth()) / 2;
             double centerY = (getHeight() - size.getHeight()) / 2;

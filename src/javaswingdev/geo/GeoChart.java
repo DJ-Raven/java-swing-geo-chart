@@ -40,7 +40,6 @@ public class GeoChart extends JComponent {
     }
 
     private void init() {
-        load();
         geoChartPanel.initMouse();
     }
 
