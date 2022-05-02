@@ -33,7 +33,7 @@ public class GeoData {
         try {
             GsonBuilder builder = new GsonBuilder();
             Gson gson = builder.create();
-            InputStream in = getClass().getResourceAsStream("/javaswingdev/geo/countries.geo.json");
+            InputStream in = getClass().getResourceAsStream("/javaswingdev/geo/json/countries.geo.medium.json");
             InputStreamReader reader = new InputStreamReader(in);
             BufferedReader bufferedReader = new BufferedReader(reader);
             JsonData data = gson.fromJson(bufferedReader, JsonData.class);
