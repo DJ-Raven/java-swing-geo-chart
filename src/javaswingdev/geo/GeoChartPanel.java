@@ -1,5 +1,6 @@
 package javaswingdev.geo;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -194,22 +195,34 @@ public class GeoChartPanel extends JComponent {
             double centerX = (getWidth() - size.getWidth()) / 2;
             double centerY = (getHeight() - size.getHeight()) / 2;
             g2.translate(centerX, centerY);
-            shape.forEach((t, u) -> {
-                drawCountry(g2, u);
+            shape.forEach((k, v) -> {
+                drawCountry(g2, k, v);
             });
             g2.dispose();
         }
         super.paintComponent(g);
     }
 
-    private void drawCountry(Graphics2D g2, Shape shap) {
-        g2.setColor(component.getMapColor());
+    private void drawCountry(Graphics2D g2, String country, Shape shap) {
         if (shap == shape_over) {
             g2.setColor(component.getMapSelectedColor());
             g2.fill(shap);
         } else {
+            if (checkModel(country)) {
+                g2.setColor(getColorOf(country));
+            } else {
+                g2.setColor(component.getMapColor());
+            }
             g2.fill(shap);
         }
+    }
+
+    private boolean checkModel(String country) {
+        return component.getModel().containsKey(country);
+    }
+
+    private Color getColorOf(String country) {
+        return new Color(75, 200, 135);
     }
 
     private Shape toShap(List<List<Coordinates>> data) {

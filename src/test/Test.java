@@ -15,7 +15,13 @@ public class Test extends javax.swing.JFrame {
     public Test() {
         initComponents();
         getContentPane().setBackground(new Color(255, 255, 255));
-        geoChart.load(GeoData.Resolution.LOW);
+        geoChart.load(GeoData.Resolution.MEDIUM);
+        geoChart.putData("Vietnam", 2931);
+        geoChart.putData("India", 2915);
+        geoChart.putData("Indonesia", 1885);
+        geoChart.putData("Morocco", 1809);
+        geoChart.putData("Philippines", 1493);
+        geoChart.putData("Algeria", 1310);
     }
 
     /**

@@ -14,7 +14,9 @@ import java.awt.geom.Area;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 
@@ -22,6 +24,7 @@ public class GeoChart extends JComponent {
 
     private final GeoChartPanel geoChartPanel;
     private final JScrollPane scroll;
+    private final Map<String, Double> model = new HashMap<>();
     private final List<GeoData.Regions> geoRegions = new ArrayList<>();
     private Color gradientColor = new Color(101, 196, 255);
     private Color mapColor = new Color(255, 255, 255);
@@ -108,6 +111,16 @@ public class GeoChart extends JComponent {
         }
     }
 
+    public void putData(String country, double values) {
+        model.put(country, values);
+        revalidate();
+    }
+
+    public void clearData() {
+        model.clear();
+        repaint();
+    }
+
     public void clearRegions() {
         geoRegions.clear();
     }
@@ -149,5 +162,9 @@ public class GeoChart extends JComponent {
     public void setMapSelectedColor(Color mapSelectedColor) {
         this.mapSelectedColor = mapSelectedColor;
         repaint();
+    }
+
+    public Map<String, Double> getModel() {
+        return model;
     }
 }
