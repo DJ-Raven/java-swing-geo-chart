@@ -222,7 +222,8 @@ public class GeoChartPanel extends JComponent {
     }
 
     private Color getColorOf(String country) {
-        return new Color(75, 200, 135);
+        double value = component.getModel().get(country);
+        return component.getColorOf(value);
     }
 
     private Shape toShap(List<List<Coordinates>> data) {
