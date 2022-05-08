@@ -13,6 +13,7 @@ import java.awt.RenderingHints;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +33,7 @@ public class GeoChart extends JComponent {
     private Color mapSelectedColor = new Color(100, 100, 100);
     private Color axisColorMax = new Color(0, 131, 245);
     private Color axisColorMin = new Color(128, 206, 255);
+    private DecimalFormat format = new DecimalFormat("View : #,##0");
     private BufferedImage axisImage;
 
     public GeoChart() {
@@ -44,6 +46,7 @@ public class GeoChart extends JComponent {
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         setLayout(new BorderLayout());
+        setForeground(new Color(100, 100, 100));
         add(scroll);
         setPreferredSize(new Dimension(250, 200));
         setOpaque(true);
@@ -239,6 +242,14 @@ public class GeoChart extends JComponent {
 
     public Color getAxisColorMin() {
         return axisColorMin;
+    }
+
+    public DecimalFormat getFormat() {
+        return format;
+    }
+
+    public void setFormat(String format) {
+        this.format = new DecimalFormat(format);
     }
 
     public void setAxisColorMin(Color axisColorMin) {

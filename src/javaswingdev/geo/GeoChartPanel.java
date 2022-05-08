@@ -2,6 +2,8 @@ package javaswingdev.geo;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -14,6 +16,8 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Area;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +74,8 @@ public class GeoChartPanel extends JComponent {
     private double max_zoom = 300;
     private Shape shape_over;
     private Shape shape_over_border;
+    private Point mouse_location;
+    private Model_Viewer viewer;
 
     public GeoChartPanel(GeoChart component) {
         this.component = component;
@@ -105,6 +111,7 @@ public class GeoChartPanel extends JComponent {
             @Override
             public void mouseMoved(MouseEvent e) {
                 if (shape != null) {
+                    viewer = null;
                     boolean over = false;
                     Dimension size = maxAndMin.getTotalSize(zoom);
                     double centerX = (getWidth() - size.getWidth()) / 2;
@@ -112,11 +119,11 @@ public class GeoChartPanel extends JComponent {
                     for (Map.Entry<String, Shape> s : shape.entrySet()) {
                         if (s.getValue().contains(e.getPoint().getX() - centerX, e.getPoint().getY() - centerY)) {
                             over = true;
+                            mouse_location = e.getPoint();
                             if (s.getValue() != shape_over) {
                                 shape_over = s.getValue();
                                 shape_over_border = getSelectedShape(s.getKey(), shape_over);
                                 repaint();
-                                System.out.println(s.getKey());
                                 break;
                             }
                         }
@@ -126,6 +133,8 @@ public class GeoChartPanel extends JComponent {
                             shape_over = null;
                             repaint();
                         }
+                    } else {
+                        repaint();
                     }
                 }
             }
@@ -201,6 +210,7 @@ public class GeoChartPanel extends JComponent {
             shape.forEach((k, v) -> {
                 drawCountry(g2, k, v);
             });
+            drawPopup(g2, centerX, centerY);
             g2.dispose();
         }
         super.paintComponent(g);
@@ -216,6 +226,46 @@ public class GeoChartPanel extends JComponent {
         if (shap == shape_over) {
             g2.setColor(component.getMapSelectedColor());
             g2.fill(shape_over_border);
+            getViewer(country);
+        }
+    }
+
+    private void drawPopup(Graphics2D g2, double centerX, double centerY) {
+        if (viewer != null) {
+            double x = mouse_location.x - centerX;
+            double y = mouse_location.y - centerY;
+            ModelFontSize r_c = getTextSize(g2, viewer.getCountry(), component.getFont().deriveFont(Font.BOLD));
+            ModelFontSize r_v = getTextSize(g2, viewer.getValues(), component.getFont());
+            int round = 0;
+            double spaceV = 5;
+            double paceH = 8;
+            float border = 0.3f;
+            double width = Math.max(r_c.getWidth() + paceH * 2, r_v.getWidth() + paceH * 2);
+            double height = r_c.getHeight() + r_v.getHeight() + spaceV * 2;
+            g2.setColor(new Color(100, 100, 100));
+            g2.fill(new RoundRectangle2D.Double(x, y - height, width, height, round, round));
+            g2.setColor(Color.WHITE);
+            g2.fill(new RoundRectangle2D.Double(x + border, y - height + border, width - border * 2, height - border * 2, round, round));
+            g2.setColor(component.getForeground());
+            x += paceH;
+            g2.setFont(component.getFont().deriveFont(Font.BOLD));
+            g2.drawString(viewer.getCountry(), (float) x, (float) (y - height + r_c.getAscent() + spaceV));
+            g2.setFont(component.getFont());
+            g2.drawString(viewer.getValues(), (float) x, (float) (y - r_v.getHeight() + r_c.getAscent() - spaceV));
+        }
+    }
+
+    private ModelFontSize getTextSize(Graphics2D g2, String text, Font font) {
+        FontMetrics f = g2.getFontMetrics(font);
+        Rectangle2D r2 = f.getStringBounds(text, g2);
+        int ascent = f.getAscent();
+        return new ModelFontSize(r2.getWidth(), r2.getHeight(), ascent);
+    }
+
+    private void getViewer(String country) {
+        if (component.getModel().containsKey(country)) {
+            double values = component.getModel().get(country);
+            viewer = new Model_Viewer(country, component.getFormat().format(values));
         }
     }
 

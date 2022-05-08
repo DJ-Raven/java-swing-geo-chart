@@ -39,6 +39,7 @@ public class Test extends javax.swing.JFrame {
         setTitle("Geo Chart Java Swing 2D");
 
         geoChart.setBackground(new java.awt.Color(255, 255, 255));
+        geoChart.setFont(new java.awt.Font("sansserif", 0, 14)); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
