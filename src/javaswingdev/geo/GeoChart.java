@@ -3,6 +3,8 @@ package javaswingdev.geo;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -34,7 +36,8 @@ public class GeoChart extends JComponent {
     private Color mapSelectedColor = new Color(100, 100, 100);
     private Color axisColorMax = new Color(0, 131, 245);
     private Color axisColorMin = new Color(128, 206, 255);
-    private DecimalFormat format = new DecimalFormat("View : #,##0");
+    private DecimalFormat format = new DecimalFormat("View : #,##0.##");
+    private DecimalFormat df = new DecimalFormat("#,##0.##");
     private BufferedImage axisImage;
     private double axisValues = -1;
 
@@ -92,7 +95,8 @@ public class GeoChart extends JComponent {
         double height = getHeight();
         double axisWidth = width * 0.25f;
         double axisHeight = 15;
-        double x = inset.left + 8;
+        double s = drawText(g, height - inset.bottom - 8 - axisHeight, axisWidth, axisHeight);
+        double x = inset.left + 8 + s;
         double y = height - inset.bottom - 8 - axisHeight;
         if (axisWidth > 150) {
             axisWidth = 250;
@@ -107,6 +111,26 @@ public class GeoChart extends JComponent {
         g2.dispose();
         g.drawImage(axisImage, (int) x, (int) y, null);
         drawPoint(g, x, y, axisWidth);
+    }
+
+    private double drawText(Graphics2D g2, double y, double axisWidth, double axisHeight) {
+        String min = df.format(getMinValue());
+        String max = df.format(getMaxValue());
+        int space = 3;
+        ModelFontSize r_1 = getTextSize(g2, min, getFont().deriveFont(15f));
+        double size = (axisHeight - r_1.getHeight()) / 2;
+        double width = r_1.getWidth() + space * 2;
+        g2.setFont(getFont().deriveFont(15f));
+        g2.drawString(min, 8f, (float) (y + r_1.getAscent() + size));
+        g2.drawString(max, (float) (axisWidth + width + 8f + space * 2), (float) (y + r_1.getAscent() + size));
+        return width;
+    }
+
+    private ModelFontSize getTextSize(Graphics2D g2, String text, Font font) {
+        FontMetrics f = g2.getFontMetrics(font);
+        Rectangle2D r2 = f.getStringBounds(text, g2);
+        int ascent = (int) r2.getCenterY();
+        return new ModelFontSize(r2.getWidth(), r2.getHeight(), ascent);
     }
 
     private void drawPoint(Graphics2D g2, double x, double y, double axisWidth) {
