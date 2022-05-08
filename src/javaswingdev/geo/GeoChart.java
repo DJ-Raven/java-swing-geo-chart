@@ -32,7 +32,7 @@ public class GeoChart extends JComponent {
     private final Map<String, Double> model = new HashMap<>();
     private final List<GeoData.Regions> geoRegions = new ArrayList<>();
     private Color gradientColor = null;
-    private Color mapColor = new Color(200, 200, 200);
+    private Color mapColor = new Color(180, 180, 180);
     private Color mapSelectedColor = new Color(100, 100, 100);
     private Color axisColorMax = new Color(0, 131, 245);
     private Color axisColorMin = new Color(128, 206, 255);
@@ -118,7 +118,7 @@ public class GeoChart extends JComponent {
         String max = df.format(getMaxValue());
         int space = 3;
         ModelFontSize r_1 = getTextSize(g2, min, getFont().deriveFont(15f));
-        double size = (axisHeight - r_1.getHeight()) / 2;
+        double size = (axisHeight - r_1.getHeight()) / 2 - 1;
         double width = r_1.getWidth() + space * 2;
         g2.setFont(getFont().deriveFont(15f));
         g2.drawString(min, 8f, (float) (y + r_1.getAscent() + size));
