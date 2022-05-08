@@ -27,11 +27,11 @@ public class GeoChart extends JComponent {
     private final JScrollPane scroll;
     private final Map<String, Double> model = new HashMap<>();
     private final List<GeoData.Regions> geoRegions = new ArrayList<>();
-    private Color gradientColor = new Color(101, 196, 255);
-    private Color mapColor = new Color(255, 255, 255);
-    private Color mapSelectedColor = new Color(229, 229, 229);
-    private Color axisColorMax = new Color(55, 191, 132);
-    private Color axisColorMin = new Color(166, 248, 213);
+    private Color gradientColor = null;
+    private Color mapColor = new Color(200, 200, 200);
+    private Color mapSelectedColor = new Color(100, 100, 100);
+    private Color axisColorMax = new Color(0, 131, 245);
+    private Color axisColorMin = new Color(128, 206, 255);
     private BufferedImage axisImage;
 
     public GeoChart() {

@@ -11,6 +11,7 @@ import java.awt.Shape;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.awt.geom.Area;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.util.HashMap;
@@ -67,11 +68,12 @@ public class GeoChartPanel extends JComponent {
     private double zoom = 2.5;
     private double min_zoom = 1.5;
     private double max_zoom = 300;
+    private Shape shape_over;
+    private Shape shape_over_border;
 
     public GeoChartPanel(GeoChart component) {
         this.component = component;
     }
-    private Shape shape_over;
 
     public void init(List<GeoData.Regions> geoRegions, GeoData.Resolution resolution) {
         data = GeoData.getInstance().getCountry(geoRegions, resolution);
@@ -84,7 +86,7 @@ public class GeoChartPanel extends JComponent {
     private void initShape() {
         shape.clear();
         data.forEach((t, u) -> {
-            shape.put(t, toShap(u));
+            shape.put(t, toShap(u, 0));
         });
         setPreferredSize(maxAndMin.getTotalSize(zoom));
         revalidate();
@@ -112,6 +114,7 @@ public class GeoChartPanel extends JComponent {
                             over = true;
                             if (s.getValue() != shape_over) {
                                 shape_over = s.getValue();
+                                shape_over_border = getSelectedShape(s.getKey(), shape_over);
                                 repaint();
                                 System.out.println(s.getKey());
                                 break;
@@ -204,16 +207,15 @@ public class GeoChartPanel extends JComponent {
     }
 
     private void drawCountry(Graphics2D g2, String country, Shape shap) {
+        if (checkModel(country)) {
+            g2.setColor(getColorOf(country));
+        } else {
+            g2.setColor(component.getMapColor());
+        }
+        g2.fill(shap);
         if (shap == shape_over) {
             g2.setColor(component.getMapSelectedColor());
-            g2.fill(shap);
-        } else {
-            if (checkModel(country)) {
-                g2.setColor(getColorOf(country));
-            } else {
-                g2.setColor(component.getMapColor());
-            }
-            g2.fill(shap);
+            g2.fill(shape_over_border);
         }
     }
 
@@ -226,8 +228,8 @@ public class GeoChartPanel extends JComponent {
         return component.getColorOf(value);
     }
 
-    private Shape toShap(List<List<Coordinates>> data) {
-        double size = zoom;
+    private Shape toShap(List<List<Coordinates>> data, float add) {
+        double size = zoom + add;
         double minHeight = maxAndMin.getMin_height() * -1;
         double minWidth = maxAndMin.getMin_width() * -1;
         double totalHeight = minHeight + maxAndMin.getMax_height();
@@ -248,6 +250,12 @@ public class GeoChartPanel extends JComponent {
             }
         }
         return p2;
+    }
+
+    private Shape getSelectedShape(String contry, Shape shape) {
+        Area area = new Area(shape);
+        area.subtract(new Area(toShap(data.get(contry), -0.007f)));
+        return area;
     }
 
     private MaxAndMin getMaxAndMin(HashMap<String, List<List<Coordinates>>> data) {
