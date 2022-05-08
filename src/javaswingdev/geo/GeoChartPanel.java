@@ -232,6 +232,7 @@ public class GeoChartPanel extends JComponent {
 
     private void drawPopup(Graphics2D g2, double centerX, double centerY) {
         if (viewer != null) {
+            int pandding = 10;
             double x = mouse_location.x - centerX;
             double y = mouse_location.y - centerY;
             ModelFontSize r_c = getTextSize(g2, viewer.getCountry(), component.getFont().deriveFont(Font.BOLD));
@@ -242,6 +243,14 @@ public class GeoChartPanel extends JComponent {
             float border = 0.3f;
             double width = Math.max(r_c.getWidth() + paceH * 2, r_v.getWidth() + paceH * 2);
             double height = r_c.getHeight() + r_v.getHeight() + spaceV * 2;
+            x -= width + pandding;
+            y -= pandding;
+            if (x < pandding) {
+                x = pandding;
+            }
+            if (y - height < pandding) {
+                y = mouse_location.y - centerY + pandding + height;
+            }
             g2.setColor(new Color(100, 100, 100));
             g2.fill(new RoundRectangle2D.Double(x, y - height, width, height, round, round));
             g2.setColor(Color.WHITE);
