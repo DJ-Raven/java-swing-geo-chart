@@ -112,6 +112,7 @@ public class GeoChartPanel extends JComponent {
             public void mouseMoved(MouseEvent e) {
                 if (shape != null) {
                     viewer = null;
+                    component.setAxisValues(-1);
                     boolean over = false;
                     Dimension size = maxAndMin.getTotalSize(zoom);
                     double centerX = (getWidth() - size.getWidth()) / 2;
@@ -275,6 +276,7 @@ public class GeoChartPanel extends JComponent {
         if (component.getModel().containsKey(country)) {
             double values = component.getModel().get(country);
             viewer = new Model_Viewer(country, component.getFormat().format(values));
+            component.setAxisValues(values);
         }
     }
 

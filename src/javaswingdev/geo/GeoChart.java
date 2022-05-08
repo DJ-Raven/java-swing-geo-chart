@@ -10,6 +10,7 @@ import java.awt.Insets;
 import java.awt.RadialGradientPaint;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -35,6 +36,7 @@ public class GeoChart extends JComponent {
     private Color axisColorMin = new Color(128, 206, 255);
     private DecimalFormat format = new DecimalFormat("View : #,##0");
     private BufferedImage axisImage;
+    private double axisValues = -1;
 
     public GeoChart() {
         scroll = new JScrollPane();
@@ -104,6 +106,24 @@ public class GeoChart extends JComponent {
         g2.fill(rec);
         g2.dispose();
         g.drawImage(axisImage, (int) x, (int) y, null);
+        drawPoint(g, x, y, axisWidth);
+    }
+
+    private void drawPoint(Graphics2D g2, double x, double y, double axisWidth) {
+        if (axisValues >= 0) {
+            double min = getMinValue();
+            double max = getMaxValue();
+            double percentage = (axisValues - min) / (max - min);
+            double xx = x + (percentage * axisWidth);
+            double hh = 8;
+            double ss = 5;
+            Path2D p = new Path2D.Double();
+            p.moveTo(xx - ss, y - hh);
+            p.lineTo(xx + ss, y - hh);
+            p.lineTo(xx, y);
+            g2.setColor(new Color(50, 50, 50));
+            g2.fill(p);
+        }
     }
 
     private RadialGradientPaint getGradient() {
@@ -250,6 +270,10 @@ public class GeoChart extends JComponent {
 
     public void setFormat(String format) {
         this.format = new DecimalFormat(format);
+    }
+
+    public void setAxisValues(double axisValues) {
+        this.axisValues = axisValues;
     }
 
     public void setAxisColorMin(Color axisColorMin) {
