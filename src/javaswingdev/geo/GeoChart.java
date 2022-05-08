@@ -95,14 +95,14 @@ public class GeoChart extends JComponent {
         double height = getHeight();
         double axisWidth = width * 0.25f;
         double axisHeight = 15;
-        double s = drawText(g, height - inset.bottom - 8 - axisHeight, axisWidth, axisHeight);
-        double x = inset.left + 8 + s;
-        double y = height - inset.bottom - 8 - axisHeight;
         if (axisWidth > 150) {
             axisWidth = 250;
         } else if (axisWidth <= 50) {
             axisWidth = 50;
         }
+        double s = drawText(g, height - inset.bottom - 8 - axisHeight, axisWidth, axisHeight);
+        double x = inset.left + 8 + s;
+        double y = height - inset.bottom - 8 - axisHeight;
         axisImage = new BufferedImage((int) axisWidth, (int) axisHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = axisImage.createGraphics();
         Rectangle2D rec = new Rectangle2D.Double(0, 0, axisWidth, axisHeight);
@@ -129,7 +129,7 @@ public class GeoChart extends JComponent {
     private ModelFontSize getTextSize(Graphics2D g2, String text, Font font) {
         FontMetrics f = g2.getFontMetrics(font);
         Rectangle2D r2 = f.getStringBounds(text, g2);
-        int ascent = (int) r2.getCenterY();
+        int ascent = f.getAscent();
         return new ModelFontSize(r2.getWidth(), r2.getHeight(), ascent);
     }
 
